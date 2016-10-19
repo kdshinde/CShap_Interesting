@@ -186,49 +186,48 @@ namespace LearnDotNet
             var timing = new ReflectionTiming();
 
             MethodInfo info = typeof(ReflectionTiming).GetMethod("Wait");
-            //for (int i = 0; i < 25; i++)
-            //{
-            //    timing.Wait();
-            //}
-
-            Action converted = (Action)Delegate.CreateDelegate(typeof(Action), null, info);
-            //Call using Delegate
-            stopwatch.Start();
-            for (int i = 0; i < 25; i++)
-            {
-                converted();
-            }
-            stopwatch.Stop();
-            Console.WriteLine(stopwatch.ElapsedTicks);
-            
-
-
-            //Direct Call to the method
-            stopwatch.Start();
-            for (int i = 0; i < 25; i++)
-            {
-                timing.Wait();
-            }
-            stopwatch.Stop();
-            Console.WriteLine(stopwatch.ElapsedTicks + Environment.NewLine);
-            stopwatch.Reset();
-
+            //To make sure method is JITed
+            timing.Wait();
 
             //Call using Reflectin Invoke method
             stopwatch.Start();
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 info.Invoke(timing, null);
             }
             stopwatch.Stop();
-            Console.WriteLine(stopwatch.ElapsedTicks + Environment.NewLine);
+            Console.WriteLine(stopwatch.ElapsedTicks + " for Reflection");
             stopwatch.Reset();
 
+            Action converted = (Action)Delegate.CreateDelegate(typeof(Action), null, info);
+            //Call using Delegate
+            stopwatch.Start();
+            for (int i = 0; i < 1000; i++)
+            {
+                converted();
+            }
+            stopwatch.Stop();
+            Console.WriteLine(stopwatch.ElapsedTicks + " for Delegate call");
 
-            //MethodInfo method = typeof(ReflectionTiming).GetMethod("Wait");
+            //Direct Call to the method
+            stopwatch.Start();
+            for (int i = 0; i < 1000; i++)
+            {
+                timing.Wait();
+            }
+            stopwatch.Stop();
+            Console.WriteLine(stopwatch.ElapsedTicks + " for Direct call");
+            stopwatch.Reset();
+
             Console.Read();
 
+            /*Result: Performce measured in Ticks, Delegate definitely is faster than reflection invoke :)
+              	Direct	Delegate	Reflection
+        Run1	19	    7       	418
+        Run2	18	    11	        400
+        Run3	14	    7	        421
 
+             */
         }
     }
 
@@ -236,7 +235,7 @@ namespace LearnDotNet
     {
         public void Wait()
         {
-            
+            //Doing nothing
         }
     }
 }
