@@ -250,6 +250,7 @@ namespace LearnDotNet
             //Create tree with provided values
             BinarySearchTree tree = new BinarySearchTree(rootValue);
             tree.PopulateBinarySearchTree(nodeValues);
+            int height = tree.GetHeight(tree.RootNode);
         }
     }
 
@@ -308,11 +309,11 @@ namespace LearnDotNet
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public int FindHeight(Node root)
+        public int GetHeight(Node root)
         {
             if (root == null) return -1;
-            int left = FindHeight(root.LeftNode);
-            int right = FindHeight(root.RightNode);
+            int left = GetHeight(root.LeftNode);
+            int right = GetHeight(root.RightNode);
             return Math.Max(left, right) + 1;
         }
     }
