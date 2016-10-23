@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,12 +8,15 @@ using System.Data;
 using System.Reflection;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using FastMember;
 
 namespace LearnDotNet
 {
-    //Exception handling: https://msdn.microsoft.com/library/ms229005(v=vs.100).aspx
+    ///// <summary>
+    ///// Exception handling: https://msdn.microsoft.com/library/ms229005(v=vs.100).aspx
+    ///// </summary>
     //class Program
     //{
     //    static void Main(string[] args)
@@ -35,7 +39,7 @@ namespace LearnDotNet
     //        {
     //            return GetAnotherNewstring(s);
     //        }
-    //        catch(Exception ex)
+    //        catch (Exception ex)
     //        {
     //            throw;
     //        }
@@ -62,7 +66,7 @@ namespace LearnDotNet
     //    {
     //        int n = 12;
     //        List<int> list = new List<int>();
-    //        Solve(n,0,list);
+    //        Solve(n, 0, list);
     //        int ans = list.Min();
     //    }
 
@@ -82,10 +86,6 @@ namespace LearnDotNet
     //    }
     //}
 
-
-    //
-
-
     //class Employee
     //{
     //    public string LastName { get; set; }
@@ -93,7 +93,7 @@ namespace LearnDotNet
     //    public string Address { get; set; }
     //}
 
-    ////Reflection, datatable and SQL Types
+    //Reflection, datatable and SQL Types
     //class Program
     //{
     //    static void Main()
@@ -172,9 +172,72 @@ namespace LearnDotNet
     //        for (int i = 0; i < exponent; i++)
     //        {
     //            result = result * number;
-    //            //Yield is like streaming a video instead of downloading it, good analogy
     //            yield return result;
     //        }
+    //    }
+    //}
+
+
+    //Reflection vs Direct Call vs Delegates
+
+    //class Program
+    //{
+    //    static void Main()
+    //    {
+    //        var stopwatch = new Stopwatch();
+    //        var timing = new ReflectionTiming();
+
+    //        MethodInfo info = typeof(ReflectionTiming).GetMethod("Wait");
+    //        //To make sure method is JITed
+    //        timing.Wait();
+
+    //        //Call using Reflectin Invoke method
+    //        stopwatch.Start();
+    //        for (int i = 0; i < 1000000; i++)
+    //        {
+    //            info.Invoke(timing, null);
+    //        }
+    //        stopwatch.Stop();
+    //        Console.WriteLine(stopwatch.ElapsedTicks + " for Reflection");
+    //        stopwatch.Reset();
+
+    //        Action converted = (Action)Delegate.CreateDelegate(typeof(Action), null, info);
+    //        //Call using Delegate
+    //        stopwatch.Start();
+    //        for (int i = 0; i < 1000000; i++)
+    //        {
+    //            converted();
+    //        }
+    //        stopwatch.Stop();
+    //        Console.WriteLine(stopwatch.ElapsedTicks + " for Delegate call");
+
+    //        //Direct Call to the method
+    //        stopwatch.Start();
+    //        for (int i = 0; i < 1000000; i++)
+    //        {
+    //            timing.Wait();
+    //        }
+    //        stopwatch.Stop();
+    //        Console.WriteLine(stopwatch.ElapsedTicks + " for Direct call");
+    //        stopwatch.Reset();
+
+    //        Console.Read();
+
+    //        /*Result: Performce measured in Ticks, Delegate definitely is faster than reflection invoke :)
+    //          	Direct	Delegate	Reflection
+    //    Run1	19	    7       	418
+    //    Run2	18	    11	        400
+    //    Run3	14	    7	        421
+
+    //         */
+    //    }
+    //}
+
+    //public class ReflectionTiming
+    //{
+    //    public void Wait()
+    //    {
+    //        //Doing nothing
     //    }
     //}
 
@@ -182,60 +245,87 @@ namespace LearnDotNet
     {
         static void Main()
         {
-            var stopwatch = new Stopwatch();
-            var timing = new ReflectionTiming();
-
-            MethodInfo info = typeof(ReflectionTiming).GetMethod("Wait");
-            //To make sure method is JITed
-            timing.Wait();
-
-            //Call using Reflectin Invoke method
-            stopwatch.Start();
-            for (int i = 0; i < 1000; i++)
-            {
-                info.Invoke(timing, null);
-            }
-            stopwatch.Stop();
-            Console.WriteLine(stopwatch.ElapsedTicks + " for Reflection");
-            stopwatch.Reset();
-
-            Action converted = (Action)Delegate.CreateDelegate(typeof(Action), null, info);
-            //Call using Delegate
-            stopwatch.Start();
-            for (int i = 0; i < 1000; i++)
-            {
-                converted();
-            }
-            stopwatch.Stop();
-            Console.WriteLine(stopwatch.ElapsedTicks + " for Delegate call");
-
-            //Direct Call to the method
-            stopwatch.Start();
-            for (int i = 0; i < 1000; i++)
-            {
-                timing.Wait();
-            }
-            stopwatch.Stop();
-            Console.WriteLine(stopwatch.ElapsedTicks + " for Direct call");
-            stopwatch.Reset();
-
-            Console.Read();
-
-            /*Result: Performce measured in Ticks, Delegate definitely is faster than reflection invoke :)
-              	Direct	Delegate	Reflection
-        Run1	19	    7       	418
-        Run2	18	    11	        400
-        Run3	14	    7	        421
-
-             */
+            int rootValue = 16;
+            int[] nodeValues = { 12, 20, 10, 14, 17, 25, 13, 15 };
+            //Create tree with provided values
+            BinarySearchTree tree = new BinarySearchTree(rootValue);
+            tree.PopulateBinarySearchTree(nodeValues);
         }
     }
 
-    public class ReflectionTiming
+    /// <summary>
+    /// Represents a Binary Search Tree. Provides methods to populate the BST, finding height
+    /// </summary>
+    public class BinarySearchTree
     {
-        public void Wait()
+        public Node RootNode { get; set; }
+
+        public BinarySearchTree(int rootValue)
         {
-            //Doing nothing
+            RootNode = new Node(rootValue);
+        }
+
+        /// <summary>
+        /// Create nodes from array of values and add them to BST
+        /// </summary>
+        /// <param name="nodeValues"></param>
+        public void PopulateBinarySearchTree(int[] nodeValues)
+        {
+            foreach (var value in nodeValues)
+            {
+                InsertNode(RootNode, value);
+            }
+        }
+
+        /// <summary>
+        /// Add node to the BST
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public Node InsertNode(Node node, int data)
+        {
+            if (node == null)
+            {
+                node = new Node(data);
+                return node;
+            }
+            if (data <= node.Data)
+            {
+                //Fill up left node with data
+                node.LeftNode = InsertNode(node.LeftNode, data);
+            }
+            else if (data >= node.Data)
+            {
+                //Fill up right node with data
+                node.RightNode = InsertNode(node.RightNode, data);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Height of a Binary tree =  Max(Left subtree, Right subtree) + 1
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public int FindHeight(Node root)
+        {
+            if (root == null) return -1;
+            int left = FindHeight(root.LeftNode);
+            int right = FindHeight(root.RightNode);
+            return Math.Max(left, right) + 1;
+        }
+    }
+
+    public class Node
+    {
+        public int Data { get; set; }
+        public Node LeftNode { get; set; }
+        public Node RightNode { get; set; }
+
+        public Node(int data)
+        {
+            Data = data;
         }
     }
 }
