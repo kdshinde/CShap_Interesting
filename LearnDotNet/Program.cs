@@ -86,18 +86,12 @@ namespace LearnDotNet
     //    }
     //}
 
-    //class Employee
-    //{
-    //    public string LastName { get; set; }
-    //    public int Salary { get; set; }
-    //    public string Address { get; set; }
-    //}
-
     //Reflection, datatable and SQL Types
     //class Program
     //{
     //    static void Main()
     //    {
+    //        IRun fillDataTable = new Reflection();
     //        var emp = new Employee
     //        {
     //            LastName = "Shinde",
@@ -112,30 +106,13 @@ namespace LearnDotNet
     //            Address = "Mumbai"
     //        };
 
-    //        List<Employee> list = new List<Employee> { emp, emptwo };
+    //        IEnumerable<Employee> list = new List<Employee> { emp, emptwo };
 
-    //        var properties = typeof(Employee).GetProperties();
+    //        object employeesObj;
+    //        fillDataTable.Run(fillDataTable.Methods.FillDataTableFromCollection,out employeesObj, list);
 
-    //        var dataTable = new DataTable();
-    //        foreach (var info in properties)
-    //        {
-    //            dataTable.Columns.Add(new DataColumn(info.Name, Nullable.GetUnderlyingType(info.PropertyType) ?? info.PropertyType));
-    //        }
-
-    //        foreach (var entity in list)
-    //        {
-    //            object[] values = new object[properties.Length];
-    //            for (int i = 0; i < properties.Length; i++)
-    //            {
-    //                values[i] = properties[i].GetValue(entity);
-    //            }
-
-    //            dataTable.Rows.Add(values);
-    //        }
-
-    //        AddEmployee(dataTable);
+    //        AddEmployee((DataTable)employeesObj);
     //    }
-
 
     //    public static void AddEmployee(DataTable dataTable)
     //    {
@@ -177,69 +154,16 @@ namespace LearnDotNet
     //    }
     //}
 
-
-    //Reflection vs Direct Call vs Delegates
-
+    //Reflection Timing
     //class Program
     //{
     //    static void Main()
     //    {
-    //        var stopwatch = new Stopwatch();
-    //        var timing = new ReflectionTiming();
-
-    //        MethodInfo info = typeof(ReflectionTiming).GetMethod("Wait");
-    //        //To make sure method is JITed
-    //        timing.Wait();
-
-    //        //Call using Reflectin Invoke method
-    //        stopwatch.Start();
-    //        for (int i = 0; i < 1000000; i++)
-    //        {
-    //            info.Invoke(timing, null);
-    //        }
-    //        stopwatch.Stop();
-    //        Console.WriteLine(stopwatch.ElapsedTicks + " for Reflection");
-    //        stopwatch.Reset();
-
-    //        Action converted = (Action)Delegate.CreateDelegate(typeof(Action), null, info);
-    //        //Call using Delegate
-    //        stopwatch.Start();
-    //        for (int i = 0; i < 1000000; i++)
-    //        {
-    //            converted();
-    //        }
-    //        stopwatch.Stop();
-    //        Console.WriteLine(stopwatch.ElapsedTicks + " for Delegate call");
-
-    //        //Direct Call to the method
-    //        stopwatch.Start();
-    //        for (int i = 0; i < 1000000; i++)
-    //        {
-    //            timing.Wait();
-    //        }
-    //        stopwatch.Stop();
-    //        Console.WriteLine(stopwatch.ElapsedTicks + " for Direct call");
-    //        stopwatch.Reset();
-
-    //        Console.Read();
-
-    //        /*Result: Performce measured in Ticks, Delegate definitely is faster than reflection invoke :)
-    //          	Direct	Delegate	Reflection
-    //    Run1	19	    7       	418
-    //    Run2	18	    11	        400
-    //    Run3	14	    7	        421
-
-    //         */
+    //        IRun reflectionTiming = new Reflection();
+    //        reflectionTiming.Run();
     //    }
     //}
 
-    //public class ReflectionTiming
-    //{
-    //    public void Wait()
-    //    {
-    //        //Doing nothing
-    //    }
-    //}
 
     class Program
     {
@@ -254,81 +178,6 @@ namespace LearnDotNet
         }
     }
 
-    /// <summary>
-    /// Represents a Binary Search Tree. Provides methods to populate the BST, finding height
-    /// </summary>
-    public class BinarySearchTree
-    {
-        public Node RootNode { get; set; }
-
-        public BinarySearchTree(int rootValue)
-        {
-            RootNode = new Node(rootValue);
-        }
-
-        /// <summary>
-        /// Create nodes from array of values and add them to BST
-        /// </summary>
-        /// <param name="nodeValues"></param>
-        public void PopulateBinarySearchTree(int[] nodeValues)
-        {
-            foreach (var value in nodeValues)
-            {
-                InsertNode(RootNode, value);
-            }
-        }
-
-        /// <summary>
-        /// Add node to the BST
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public Node InsertNode(Node node, int data)
-        {
-            if (node == null)
-            {
-                node = new Node(data);
-                return node;
-            }
-            if (data <= node.Data)
-            {
-                //Fill up left node with data
-                node.LeftNode = InsertNode(node.LeftNode, data);
-            }
-            else if (data >= node.Data)
-            {
-                //Fill up right node with data
-                node.RightNode = InsertNode(node.RightNode, data);
-            }
-            return node;
-        }
-
-        /// <summary>
-        /// Height of a Binary tree =  Max(Left subtree, Right subtree) + 1
-        /// </summary>
-        /// <param name="root"></param>
-        /// <returns></returns>
-        public int GetHeight(Node root)
-        {
-            if (root == null) return -1;
-            int left = GetHeight(root.LeftNode);
-            int right = GetHeight(root.RightNode);
-            return Math.Max(left, right) + 1;
-        }
-    }
-
-    public class Node
-    {
-        public int Data { get; set; }
-        public Node LeftNode { get; set; }
-        public Node RightNode { get; set; }
-
-        public Node(int data)
-        {
-            Data = data;
-        }
-    }
 }
 
 
