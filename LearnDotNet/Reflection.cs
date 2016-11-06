@@ -120,9 +120,4 @@ namespace LearnDotNet
         }
     }
 
-    public class Methods
-    {
-        public readonly string ReflectionTiming = "ReflectionTiming";
-        public readonly string FillDataTableFromCollection = "FillDataTableFromCollection";
-    }
 }

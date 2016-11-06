@@ -22,6 +22,6 @@ namespace LearnDotNet
         /// <param name="method"></param>
         /// <param name="obj"></param>
         /// <param name="parameters"></param>
-        void Run(string method, out object obj, params object[] parameters);
+        //void Run(string method, out object obj, params object[] parameters);
     }
 }

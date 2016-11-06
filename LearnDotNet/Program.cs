@@ -165,19 +165,36 @@ namespace LearnDotNet
     //}
 
 
+    //class Program
+    //{
+    //    static void Main()
+    //    {
+    //        int rootValue = 16;
+    //        int[] nodeValues = { 12, 20, 10, 14, 17, 25, 13, 15 };
+    //        //Create tree with provided values
+    //        BinarySearchTree tree = new BinarySearchTree(rootValue);
+    //        tree.PopulateBinarySearchTree(nodeValues);
+    //        int height = tree.GetHeight(tree.RootNode);
+    //    }
+    //}
+
     class Program
     {
         static void Main()
         {
-            int rootValue = 16;
-            int[] nodeValues = { 12, 20, 10, 14, 17, 25, 13, 15 };
-            //Create tree with provided values
-            BinarySearchTree tree = new BinarySearchTree(rootValue);
-            tree.PopulateBinarySearchTree(nodeValues);
-            int height = tree.GetHeight(tree.RootNode);
+            var ormTest = new OrmTest();
+            ormTest.Run(ormTest.Methods.GetEmployeesWithEFramework, null);
+            ormTest.Run(ormTest.Methods.GetEmployeesWithAdo, null);
+            ormTest.Run(ormTest.Methods.GetEmployeesWithDappper,null);
+            
+            Console.Read();
+            //Test results for 1000 loops each loading around 20K rows, 11/6/2016
+            //Entity Framework 6:Avg 544 ms
+            //ADO net time taken: Avg 638 ms
+            //Dapper : 523 ms
+
         }
     }
-
 }
 
 
