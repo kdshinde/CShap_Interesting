@@ -190,8 +190,11 @@ namespace LearnDotNet
             Console.Read();
             //Test results for 1000 loops each loading around 20K rows, 11/6/2016
             //Entity Framework 6:Avg 544 ms
-            //ADO net time taken: Avg 638 ms
+            //ADO net, reflection time taken: Avg 638 ms
             //Dapper : 523 ms
+            //Note: Asked question on Stack Overflow: http://stackoverflow.com/questions/40453321/why-is-c-sharp-ado-net-slower-than-entity-framework-6-1-3
+            //I ran the code for a single employee and Ado .Net was around 50% faster than Entity Framework. I kept ..
+            //on increasing the number of employees and reached threshold at around 100 employees when EF started taking over
 
         }
     }

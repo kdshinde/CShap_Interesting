@@ -56,35 +56,30 @@ namespace LearnDotNet
             var stopWatch = new Stopwatch();
             stopWatch.Start();
             var dt = new DataTable();
-            using (var conn = new SqlConnection(
-                            @"Data Source = (local); Initial Catalog = AdventureWorks2012; Integrated Security = True;"))
-            {
-                conn.Open();
-                using (var adaptor = new SqlDataAdapter("GetAllPersons", conn))
-                {
-                    adaptor.Fill(dt);
-                }
-            }
-
+            var conn = new SqlConnection(
+                @"Data Source = (local); Initial Catalog = AdventureWorks2012; Integrated Security = True;");
+            var adaptor = new SqlDataAdapter("GetAllPersons", conn);
+            adaptor.Fill(dt);
             var accessor = TypeAccessor.Create(typeof(GetAllPersons_Result));
             MemberSet members = accessor.GetMembers();
 
             var list = new List<GetAllPersons_Result>();
-            for (int i = 0; i < dt.Rows.Count; i++)
+            foreach(DataRow row in dt.Rows)
             {
-                var row = dt.Rows[i];
                 var person = new GetAllPersons_Result();
                 foreach (var member in members)
                 {
                     if (row[member.Name] != DBNull.Value)
+                    {
                         accessor[person, member.Name] = row[member.Name];
+                    }
                 }
                 list.Add(person);
             }
 
             stopWatch.Stop();
             //Console.WriteLine("Ado Net time taken:{0}",stopWatch.ElapsedMilliseconds);
-            return stopWatch.ElapsedMilliseconds;
+            return stopWatch.ElapsedTicks;
             //Console.Read();
 
         }
@@ -96,7 +91,7 @@ namespace LearnDotNet
             var context = new AdventureWorks2012Entities1();
             List<GetAllPersons_Result> list = context.GetAllPersons().ToList();
             stopWatch.Stop();
-            return stopWatch.ElapsedMilliseconds;
+            return stopWatch.ElapsedTicks;
             //Console.WriteLine("Entity framework time taken:{0}", stopWatch.ElapsedMilliseconds);
             //Console.Read();
         }
@@ -112,7 +107,7 @@ namespace LearnDotNet
                     conn.Query<GetAllPersons_Result>("GetAllPersons", commandType: CommandType.StoredProcedure).ToList();
             }
             stopWatch.Stop();
-            return stopWatch.ElapsedMilliseconds;
+            return stopWatch.ElapsedTicks;
         }
 
     }
