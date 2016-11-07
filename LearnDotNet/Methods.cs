@@ -13,7 +13,7 @@ namespace LearnDotNet
         public readonly string GetEmployeesWithAdo = "GetEmployeesWithAdo";
         public readonly string GetEmployeesWithEFramework = "GetEmployeesWithEFramework";
         public readonly string GetEmployeesWithDappper = "GetEmployeesWithDappper";
-        
+        public readonly string PropertyAccessorTest = "PropertyAccessorTest";
     }
-    
+
 }

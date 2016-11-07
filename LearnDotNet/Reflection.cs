@@ -1,12 +1,15 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using FastMember;
 
 namespace LearnDotNet
 {
@@ -16,6 +19,7 @@ namespace LearnDotNet
     public class Reflection : IRun
     {
         public Methods Methods { get; } = new Methods();
+        public int Iterations = 100;
 
         public void Run(string method, params object[] parameters)
         {
@@ -23,6 +27,21 @@ namespace LearnDotNet
             {
                 case "ReflectionTiming":
                     ReflectionTiming();
+                    break;
+                case "PropertyAccessorTest":
+                    long time = 0;
+                    DataTable dt = GetEmployees();
+                    for (int i = 0; i < Iterations; i++)
+                    {
+                        time = GetEmployeesWithReflection(dt);
+                    }
+                    Console.WriteLine("Property set with Reflection took:{0}", time);
+                    time = 0;
+                    for (int i = 0; i < Iterations; i++)
+                    {
+                        time = GetEmployeesWithFastMember(dt);
+                    }
+                    Console.WriteLine("Property set with Fast Member took:{0}", time);
                     break;
             }
         }
@@ -67,6 +86,65 @@ namespace LearnDotNet
                 dataTable.Rows.Add(values);
             }
             return dataTable;
+        }
+
+        public static DataTable GetEmployees()
+        {
+            var dt = new DataTable();
+            var conn = new SqlConnection(
+                @"Data Source = (local); Initial Catalog = AdventureWorks2012; Integrated Security = True;");
+            var adaptor = new SqlDataAdapter("GetAllPersons", conn);
+            adaptor.Fill(dt);
+            return dt;
+        }
+
+        public static long GetEmployeesWithFastMember(DataTable dt)
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var accessor = TypeAccessor.Create(typeof(GetAllPersons_Result));
+            MemberSet members = accessor.GetMembers();
+
+            var list = new List<GetAllPersons_Result>();
+            foreach (DataRow row in dt.Rows)
+            {
+                var person = new GetAllPersons_Result();
+                foreach (var member in members)
+                {
+                    if (row[member.Name] != DBNull.Value)
+                    {
+                        accessor[person, member.Name] = row[member.Name];
+                    }
+                }
+                list.Add(person);
+            }
+            stopWatch.Stop();
+            return stopWatch.ElapsedTicks;
+        }
+
+        public static long GetEmployeesWithReflection(DataTable dt)
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            PropertyInfo[] properties = typeof(GetAllPersons_Result).GetProperties();
+
+            var list = new List<GetAllPersons_Result>();
+            foreach (DataRow row in dt.Rows)
+            {
+                var person = new GetAllPersons_Result();
+                foreach (var property in properties)
+                {
+                    if (row[property.Name] != DBNull.Value)
+                    {
+                        property.SetValue(person, row[property.Name], null);
+                    }
+                }
+                list.Add(person);
+            }
+
+            stopWatch.Stop();
+            return stopWatch.ElapsedTicks;
         }
 
         private static void ReflectionTiming()
